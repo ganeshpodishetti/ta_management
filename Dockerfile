@@ -8,6 +8,6 @@ WORKDIR /usr/src/app1/Frontend
 RUN npm install
 RUN npm run build
 WORKDIR /usr/src/app1
-EXPOSE 3001
+EXPOSE 3000
 
 CMD ["node", "app.js"]

@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, './Frontend/build')));
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const uploadsDir = "./uploads";

@@ -54,7 +54,10 @@ const Login = ({ setUserGlobal }) => {
 	};
 
 	return (
-		<Container maxWidth="xs" className="mt-5">
+		<Container maxWidth="xs" className="mt-4">
+			<Typography variant="h4" component="h1" gutterBottom className="text-center fw-bold py-3">
+				TA Management
+			</Typography>
 			<Grid container spacing={3} direction="column" alignItems="center">
 				<Grid item xs={12}>
 					<Typography variant="h4" component="h1" gutterBottom>
