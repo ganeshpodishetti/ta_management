@@ -140,7 +140,7 @@ const ApplicationList = ({ setUser, user }) => {
 				<Grid item xs>
 					<Container className="container mt-4">
 						<Box className="notifContainer">
-							<Badge badgeContent={1} color="primary">
+							<Badge badgeContent={notifs.length} color="primary">
 								<Notifications
 									onClick={() => {setNotifOpen(!notifOpen)}}
 									color="primary"
