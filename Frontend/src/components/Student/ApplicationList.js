@@ -1,19 +1,31 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
+	Alert,
+	Badge,
 	Box,
 	Button,
+	Chip,
 	CircularProgress,
 	Container,
 	Grid,
-	List,
-	ListItem,
+	Paper,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
 	Typography,
 } from "@mui/material";
 import { LeftMenu } from "./Utils";
+import { Notifications } from "@mui/icons-material";
+import "../../styles/ApplicationList.css";
 
 const ApplicationList = ({ setUser, user }) => {
 	const [applications, setApplications] = useState([]);
+	const [notifOpen, setNotifOpen] = useState(false);
+	const [notifs, setNotifs] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	const fillApplications = (apps) => {
@@ -42,6 +54,12 @@ const ApplicationList = ({ setUser, user }) => {
 					fillApplications(response.data);
 					setLoading(false);
 				}
+				const response2 = await axios.get(
+					`/api/notifications/${user.username}`
+				);
+				if (response2.status === 200) {
+					setNotifs(response2.data);
+				}
 			} catch (error) {
 				console.error("Error fetching applications:", error);
 			}
@@ -53,17 +71,17 @@ const ApplicationList = ({ setUser, user }) => {
 	const getStatusBGColor = (status) => {
 		switch (status) {
 			case "Pending":
-				return "bg-warning";
+				return "warning";
 			case "In Review":
-				return "bg-info";
+				return "info";
 			case "Accepted":
-				return "bg-success";
+				return "success";
 			case "Approved":
-				return "bg-primary";
+				return "secondary";
 			case "Rejected":
-				return "bg-danger";
+				return "error";
 			default:
-				return "bg-secondary";
+				return "secondary";
 		}
 	};
 
@@ -87,6 +105,14 @@ const ApplicationList = ({ setUser, user }) => {
 		}
 	};
 
+	const handleNotifClose = async (id) => {
+		const resp = await axios.delete(`/api/notifications/${id}`);
+		if (resp.status === 200) {
+			const newNotifs = notifs.filter((notif) => notif.id !== id);
+			setNotifs(newNotifs);
+		}
+	};
+
 	if (loading) {
 		return (
 			<Box>
@@ -97,7 +123,9 @@ const ApplicationList = ({ setUser, user }) => {
 							<Typography variant="h4" gutterBottom>
 								Applications
 							</Typography>
-							<CircularProgress />
+							<Box className="text-center">
+								<CircularProgress />
+							</Box>
 						</Container>
 					</Grid>
 				</Grid>
@@ -111,48 +139,115 @@ const ApplicationList = ({ setUser, user }) => {
 				<LeftMenu setUser={setUser} />
 				<Grid item xs>
 					<Container className="container mt-4">
-						<Typography variant="h4" gutterBottom>
+						<Box className="notifContainer">
+							<Badge badgeContent={1} color="primary">
+								<Notifications
+									onClick={() => {setNotifOpen(!notifOpen)}}
+									color="primary"
+									className="fs-2"
+									style={{ cursor: "pointer" }}
+								/>
+							</Badge>
+							{notifOpen && notifs?.map((notif, index) => (
+								<Alert
+									key={index}
+									severity={"info"}
+									className="mt-2 notifAlert"
+									style={{ fontFamily: "Poppins" }}
+									onClose={() => handleNotifClose(notif.id)}
+								>
+									{notif.message}
+								</Alert>
+							))}
+						</Box>
+						<Typography
+							variant="h4"
+							gutterBottom
+							className="fw-bold"
+							style={{ fontFamily: "Poppins" }}
+						>
 							Applications
 						</Typography>
-						<List>
+						<Box>
 							{applications.length === 0 ? (
 								<Typography>No Applications Yet</Typography>
 							) : (
-								applications.map((application, index) => (
-									<ListItem key={index} className="border">
-										<Container className="d-flex justify-content-between align-items-center">
-											<Typography className={`px-3`}>
-												Course: {application.course}
-											</Typography>
-											<Box className="d-flex align-items-center">
-												<Typography
-													className={`fw-bold px-3 border ${getStatusBGColor(
-														application.status
-													)}`}
-												>
-													Status: {application.status}
-												</Typography>
-												{application.status === "Approved" && (
-													<Button
-														variant="contained"
-														color="primary"
-														onClick={() =>
-															handleAccept(
-																application.id,
-																application.index,
-																index
-															)
-														}
+								<TableContainer component={Paper} className="mb-4">
+									<Table>
+										<TableHead>
+											<TableRow>
+												<TableCell>
+													<Typography
+														variant="h6"
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
 													>
-														Accept
-													</Button>
-												)}
-											</Box>
-										</Container>
-									</ListItem>
-								))
+														Course
+													</Typography>
+												</TableCell>
+												<TableCell>
+													<Typography
+														variant="h6"
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
+													>
+														Status
+													</Typography>
+												</TableCell>
+												<TableCell>
+													<Typography
+														variant="h6"
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
+													>
+														Action
+													</Typography>
+												</TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{applications.map((application, index) => (
+												<TableRow key={index}>
+													<TableCell>
+														<Typography
+															variant="button"
+															style={{ fontFamily: "Poppins" }}
+															className="fs-6"
+														>
+															{application.course}
+														</Typography>
+													</TableCell>
+													<TableCell>
+														<Chip
+															label={application.status.toUpperCase()}
+															className="text-white fw-bold"
+															color={`${getStatusBGColor(application.status)}`}
+														/>
+													</TableCell>
+													<TableCell>
+														{application.status === "Approved" && (
+															<Button
+																variant="contained"
+																color="success"
+																onClick={() =>
+																	handleAccept(
+																		application.id,
+																		application.index,
+																		index
+																	)
+																}
+															>
+																Accept
+															</Button>
+														)}
+													</TableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</TableContainer>
 							)}
-						</List>
+						</Box>
 					</Container>
 				</Grid>
 			</Grid>

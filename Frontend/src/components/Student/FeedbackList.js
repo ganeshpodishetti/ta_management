@@ -12,14 +12,14 @@ import { LeftMenu } from "./Utils";
 import axios from "axios";
 import { ArrowDropDown, ArrowDropUp } from "@mui/icons-material";
 
-const FeedbackList = ({ setUser }) => {
+const FeedbackList = ({ setUser, user }) => {
 	const [feedbacks, setFeedbacks] = useState([]);
 	const [open, setOpen] = useState(-1);
 
 	useEffect(() => {
 		const fetchAllFeedbacks = async () => {
 			try {
-				const response = await axios.get("/api/getAllFeedbacks");
+				const response = await axios.get(`/api/getFeedbacks/${user.username}`);
 
 				if (response.status === 200) {
 					setFeedbacks(response.data);
@@ -33,7 +33,7 @@ const FeedbackList = ({ setUser }) => {
 		};
 
 		fetchAllFeedbacks();
-	}, []);
+	}, [user]);
 
 	return (
 		<Box>

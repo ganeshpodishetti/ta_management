@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import {
-	Container,
 	TextField,
 	Button,
-	Grid,
 	Typography,
 	Alert,
 	FormControl,
 	InputLabel,
 	Select,
 	MenuItem,
+	Box,
 } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../styles/SignUp.css";
 
 const Signup = ({ setUserGlobal }) => {
 	const navigate = useNavigate();
@@ -66,18 +66,30 @@ const Signup = ({ setUserGlobal }) => {
 	};
 
 	return (
-		<Container maxWidth="sm" className="mt-3">
-			<Typography variant="h4" component="h1" gutterBottom className="text-center fw-bold py-3">
+		<Box className="signup-container d-flex flex-column align-items-center m-0 p-0">
+			<Typography
+				variant="h4"
+				component="h1"
+				className="text-center py-3"
+				style={{ fontFamily: "Holtwood One SC" }}
+			>
 				TA Management
 			</Typography>
-			<Grid container spacing={3} direction="column" alignItems="center">
-				<Grid item xs={12}>
-					<Typography variant="h4" component="h1" gutterBottom>
+			<Box
+				style={{ backgroundColor: "white" }}
+				className="shadow py-2 px-5 signInContainer border mt-4 d-flex flex-column justify-content-center align-items-center"
+			>
+				<Box className="py-2">
+					<Typography
+						variant="h4"
+						component="h1"
+						gutterBottom
+						className="fw-bold"
+					>
 						Sign Up
 					</Typography>
-				</Grid>
-				{/* Username */}
-				<Grid item xs={12}>
+				</Box>
+				<Box className="my-2">
 					<TextField
 						label="Username"
 						variant="outlined"
@@ -86,9 +98,8 @@ const Signup = ({ setUserGlobal }) => {
 						value={user.username}
 						onChange={handleChange}
 					/>
-				</Grid>
-				{/* Password */}
-				<Grid item xs={12}>
+				</Box>
+				<Box className="my-2">
 					<TextField
 						label="Password"
 						variant="outlined"
@@ -98,9 +109,8 @@ const Signup = ({ setUserGlobal }) => {
 						value={user.password}
 						onChange={handleChange}
 					/>
-				</Grid>
-				{/* Confirm Password */}
-				<Grid item xs={12}>
+				</Box>
+				<Box className="my-2">
 					<TextField
 						label="Confirm Password"
 						variant="outlined"
@@ -110,9 +120,8 @@ const Signup = ({ setUserGlobal }) => {
 						value={user.confirmPassword}
 						onChange={handleChange}
 					/>
-				</Grid>
-				{/* Role */}
-				<Grid item xs={12}>
+				</Box>
+				<Box className="my-2">
 					<FormControl variant="outlined" fullWidth style={{ width: "300px" }}>
 						<InputLabel id="role-label">Role</InputLabel>
 						<Select
@@ -130,14 +139,14 @@ const Signup = ({ setUserGlobal }) => {
 							<MenuItem value="Instructor">Instructor</MenuItem>
 						</Select>
 					</FormControl>
-				</Grid>
+				</Box>
 
 				{error && (
-					<Grid item xs={12}>
+					<Box className="my-2">
 						<Alert severity="error">{error}</Alert>
-					</Grid>
+					</Box>
 				)}
-				<Grid item xs={12}>
+				<Box className="my-2">
 					<Button
 						variant="contained"
 						color="primary"
@@ -146,9 +155,9 @@ const Signup = ({ setUserGlobal }) => {
 					>
 						Sign Up
 					</Button>
-				</Grid>
-			</Grid>
-		</Container>
+				</Box>
+			</Box>
+		</Box>
 	);
 };
 

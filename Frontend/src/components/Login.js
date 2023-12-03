@@ -1,14 +1,8 @@
 import React, { useState } from "react";
-import {
-	Container,
-	TextField,
-	Button,
-	Grid,
-	Typography,
-	Alert,
-} from "@mui/material";
+import { TextField, Button, Typography, Alert, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../styles/Login.css";
 
 const Login = ({ setUserGlobal }) => {
 	const navigate = useNavigate();
@@ -54,17 +48,30 @@ const Login = ({ setUserGlobal }) => {
 	};
 
 	return (
-		<Container maxWidth="xs" className="mt-4">
-			<Typography variant="h4" component="h1" gutterBottom className="text-center fw-bold py-3">
+		<Box className="login-container d-flex flex-column align-items-center m-0 p-0">
+			<Typography
+				variant="h4"
+				component="h1"
+				className="text-center py-3"
+				style={{ fontFamily: "Holtwood One SC" }}
+			>
 				TA Management
 			</Typography>
-			<Grid container spacing={3} direction="column" alignItems="center">
-				<Grid item xs={12}>
-					<Typography variant="h4" component="h1" gutterBottom>
+			<Box
+				style={{ backgroundColor: "white" }}
+				className="shadow py-2 px-5 signInContainer border mt-4 d-flex flex-column justify-content-center align-items-center"
+			>
+				<Box className="py-2">
+					<Typography
+						variant="h4"
+						component="h1"
+						gutterBottom
+						className="fw-bold"
+					>
 						Sign In
 					</Typography>
-				</Grid>
-				<Grid item xs={12}>
+				</Box>
+				<Box className="my-2">
 					<TextField
 						label="Username"
 						variant="outlined"
@@ -73,8 +80,8 @@ const Login = ({ setUserGlobal }) => {
 						value={credentials.username}
 						onChange={handleChange}
 					/>
-				</Grid>
-				<Grid item xs={12}>
+				</Box>
+				<Box className="my-2">
 					<TextField
 						label="Password"
 						variant="outlined"
@@ -84,13 +91,13 @@ const Login = ({ setUserGlobal }) => {
 						value={credentials.password}
 						onChange={handleChange}
 					/>
-				</Grid>
+				</Box>
 				{error && (
-					<Grid item xs={12}>
+					<Box className="my-2">
 						<Alert severity="error">{error}</Alert>
-					</Grid>
+					</Box>
 				)}
-				<Grid item xs={12}>
+				<Box className="my-2">
 					<Button
 						variant="contained"
 						color="primary"
@@ -99,8 +106,8 @@ const Login = ({ setUserGlobal }) => {
 					>
 						Sign In
 					</Button>
-				</Grid>
-				<Grid item xs={12}>
+				</Box>
+				<Box className="my-2">
 					<Button
 						variant="outlined"
 						color="primary"
@@ -109,9 +116,9 @@ const Login = ({ setUserGlobal }) => {
 					>
 						Sign Up
 					</Button>
-				</Grid>
-			</Grid>
-		</Container>
+				</Box>
+			</Box>
+		</Box>
 	);
 };
 

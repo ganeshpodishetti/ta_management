@@ -54,6 +54,21 @@ const LeftMenu = ({ setUser }) => {
 					</Typography>
 				</NavLink>
 			</Box>
+			<Box className="d-flex justify-content-start align-items-center w-100">
+				<NavLink
+					to="/feedbacks"
+					className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
+				>
+					<Article className="fs-3 me-2" style={{ color: "white" }} />
+					<Typography
+						variant="overline"
+						className="fw-bold fs-6"
+						color={"white"}
+					>
+						Feedback
+					</Typography>
+				</NavLink>
+			</Box>
 			<Box className="d-flex justify-content-start align-items-center w-100 ms-3">
 				<Logout className="fs-3 me-2" style={{ color: "white" }} />
 				<Button variant="text" color="inherit" onClick={handleLogout}>

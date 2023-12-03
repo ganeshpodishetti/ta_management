@@ -12,9 +12,11 @@ import {
 	FeedbackList,
 	FeedbackListDS,
 	FeedbackListTC,
+	FeedbackListStudent,
 } from "./components";
 import axios from "axios";
 import "./styles/App.css";
+import { Box, CircularProgress } from "@mui/material";
 
 const App = () => {
 	const [user, setUser] = useState(null);
@@ -39,9 +41,9 @@ const App = () => {
 
 	if (loading) {
 		return (
-			<div className="d-flex justify-content-center align-items-center h-100">
-				<h1>Loading...</h1>
-			</div>
+			<Box className="d-flex justify-content-center align-items-center h-100 mt-5">
+				<CircularProgress className="mt-5" />
+			</Box>
 		);
 	}
 
@@ -81,6 +83,10 @@ const App = () => {
 						<Route
 							path="/apply"
 							element={<ApplicationForm setUser={handleSetUser} user={user} />}
+						/>
+						<Route
+							path="/feedbacks"
+							element={<FeedbackListStudent setUser={handleSetUser} user={user} />}
 						/>
 						<Route
 							path="*"

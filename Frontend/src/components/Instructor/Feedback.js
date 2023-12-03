@@ -7,6 +7,7 @@ import {
 	ListItem,
 	ListItemText,
 	Modal,
+	Rating,
 	TextField,
 	Typography,
 } from "@mui/material";
@@ -16,6 +17,7 @@ import axios from "axios";
 
 const UserFeedbackModal = ({ user, open, onClose }) => {
 	const [feedback, setFeedback] = useState("");
+	const [rating, setRating] = useState(0);
 
 	const handleClose = () => {
 		setFeedback("");
@@ -23,17 +25,18 @@ const UserFeedbackModal = ({ user, open, onClose }) => {
 	};
 
 	const handleSubmit = async () => {
-    try {
-      await axios.post('/api/createFeedback', {
-        ...user,
-        feedback,
-      });
+		try {
+			await axios.post("/api/createFeedback", {
+				...user,
+				feedback,
+				rating,
+			});
 
-      alert('Feedback created successfully');
-    } catch (error) {
-      alert('Error creating feedback');
-      console.error('Error creating feedback:', error);
-    }
+			alert("Feedback created successfully");
+		} catch (error) {
+			alert("Error creating feedback");
+			console.error("Error creating feedback:", error);
+		}
 		handleClose();
 	};
 
@@ -53,11 +56,25 @@ const UserFeedbackModal = ({ user, open, onClose }) => {
 						maxWidth: "400px",
 					}}
 				>
-					<Typography variant="h6">User Information</Typography>
-					<Typography variant="body1">Username: {user.username}</Typography>
-					<Typography variant="body1">Name: {user.name}</Typography>
-					<Typography variant="body1">Email: {user.email}</Typography>
-					<Typography variant="body1">Course: {user.course}</Typography>
+					<Typography
+						style={{ fontFamily: "Poppins" }}
+						className="fw-bold"
+						variant="h6"
+					>
+						User Information
+					</Typography>
+					<Typography style={{ fontFamily: "Poppins" }} variant="body1">
+						Username: <strong>{user.username}</strong>
+					</Typography>
+					<Typography style={{ fontFamily: "Poppins" }} variant="body1">
+						Name: <strong>{user.name}</strong>
+					</Typography>
+					<Typography style={{ fontFamily: "Poppins" }} variant="body1">
+						Email: <strong>{user.email}</strong>
+					</Typography>
+					<Typography style={{ fontFamily: "Poppins" }} variant="body1">
+						Course: <strong>{user.course}</strong>
+					</Typography>
 					<TextField
 						label="Feedback"
 						variant="outlined"
@@ -68,6 +85,18 @@ const UserFeedbackModal = ({ user, open, onClose }) => {
 						onChange={(e) => setFeedback(e.target.value)}
 						className="mt-3"
 					/>
+					<Box>
+						<Typography className="mt-3 fw-bold" style={{ fontFamily: "Poppins" }}>
+							Rating
+						</Typography>
+						<Rating
+							name="rating"
+							value={rating}
+							onChange={(event, newValue) => {
+								setRating(newValue);
+							}}
+						/>
+					</Box>
 					<Button
 						variant="contained"
 						color="primary"
@@ -121,32 +150,47 @@ const Feedback = ({ setUser }) => {
 		<Box>
 			<Grid container>
 				<LeftMenu setUser={setUser} />
-				<Grid item xs>
+				<Grid item xs className="my-4">
 					<Container className="container">
-						<Typography variant="h4" gutterBottom>
+						<Typography
+							variant="h4"
+							gutterBottom
+							style={{ fontFamily: "Poppins" }}
+							className="fw-bold"
+						>
 							Users with Eligible Courses Accepted
 						</Typography>
 						<List>
 							{acceptedApplications.map((user, index) => (
-								<ListItem key={index} className="border p-3 mb-3">
-									<ListItem key={user.id} className="border p-3 mb-3">
-										<ListItemText
-											primary={`Name: ${user.name} (${user.username})`}
-											secondary={`Email: ${user.email} | Course: ${user.course}`}
-										/>
-										<Button
-											variant="contained"
-											color="primary"
-											onClick={() => setOpen(true)}
-										>
-											Feedback
-										</Button>
-										<UserFeedbackModal
-											user={user}
-											open={open}
-											onClose={() => setOpen(false)}
-										/>
-									</ListItem>
+								<ListItem
+									key={user.id}
+									className="p-3 mb-3 shadow rounded"
+									style={{ backgroundColor: "white" }}
+								>
+									<ListItemText
+										primary={`Name: ${user.name} (${user.username})`}
+										secondary={`Email: ${user.email} | Course: ${user.course}`}
+										primaryTypographyProps={{
+											style: { fontFamily: "Poppins" },
+											className: "fw-bold",
+										}}
+										secondaryTypographyProps={{
+											style: { fontFamily: "Poppins" },
+											className: "fw-bold",
+										}}
+									/>
+									<Button
+										variant="contained"
+										color="primary"
+										onClick={() => setOpen(true)}
+									>
+										Feedback
+									</Button>
+									<UserFeedbackModal
+										user={user}
+										open={open}
+										onClose={() => setOpen(false)}
+									/>
 								</ListItem>
 							))}
 						</List>

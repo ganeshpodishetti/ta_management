@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, './Frontend/build')));
+app.use(express.static(path.join(__dirname, "./Frontend/build")));
 
 const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -227,6 +227,14 @@ app.post("/api/updateStatus", async (req, res) => {
 
 		await applicationsRef.doc(applicantId).set(applicationData);
 
+		const newNotification = {
+			username: null,
+			role: "Instructor",
+			message: `${applicationData.name} has been accepted for TAship for ${applicationData.eligibleCourses[index]}.`,
+		};
+
+		await db.collection("notifications").add(newNotification);
+
 		res.status(200).json({ message: "Status updated successfully" });
 	} catch (error) {
 		console.error("Error updating status:", error);
@@ -235,23 +243,23 @@ app.post("/api/updateStatus", async (req, res) => {
 });
 
 // Route to get applications with "Accepted" status
-app.get('/api/getAcceptedApplications', async (req, res) => {
-  try {
-    const applicationsSnapshot = await db
-      .collection('applicants')
-      .where('status', 'array-contains', 'Accepted')
-      .get();
+app.get("/api/getAcceptedApplications", async (req, res) => {
+	try {
+		const applicationsSnapshot = await db
+			.collection("applicants")
+			.where("status", "array-contains", "Accepted")
+			.get();
 
-    const acceptedApplications = [];
-    applicationsSnapshot.forEach((doc) => {
-      acceptedApplications.push({ id: doc.id, ...doc.data() });
-    });
+		const acceptedApplications = [];
+		applicationsSnapshot.forEach((doc) => {
+			acceptedApplications.push({ id: doc.id, ...doc.data() });
+		});
 
-    res.status(200).json(acceptedApplications);
-  } catch (error) {
-    console.error('Error fetching accepted applications:', error);
-    res.status(500).json({ error: 'Error fetching accepted applications' });
-  }
+		res.status(200).json(acceptedApplications);
+	} catch (error) {
+		console.error("Error fetching accepted applications:", error);
+		res.status(500).json({ error: "Error fetching accepted applications" });
+	}
 });
 
 // Route to add new course in the database
@@ -292,45 +300,147 @@ app.get("/api/get-all-courses", async (req, res) => {
 });
 
 // Route to create feedback
-app.post('/api/createFeedback', async (req, res) => {
-  try {
-    const { username, name, email, course, feedback } = req.body;
+app.post("/api/createFeedback", async (req, res) => {
+	try {
+		const { username, name, email, course, feedback, rating } = req.body;
 
-    const feedbackRef = await db.collection('Feedbacks').add({
-      username,
-      name,
-      email,
-      course,
-      feedback,
-    });
+		const feedbackRef = await db.collection("Feedbacks").add({
+			username,
+			name,
+			email,
+			course,
+			feedback,
+			rating,
+		});
 
-    res.status(201).json({ message: 'Feedback created successfully', id: feedbackRef.id });
-  } catch (error) {
-    console.error('Error creating feedback:', error);
-    res.status(500).json({ error: 'Failed to create feedback' });
-  }
+		const newNotification = {
+			username,
+			role: "Student",
+			message: `You have got a feedback for ${course}`,
+		};
+		await db.collection("notifications").add(newNotification);
+
+		res
+			.status(201)
+			.json({ message: "Feedback created successfully", id: feedbackRef.id });
+	} catch (error) {
+		console.error("Error creating feedback:", error);
+		res.status(500).json({ error: "Failed to create feedback" });
+	}
 });
 
 // Route to get all feedbacks
-app.get('/api/getAllFeedbacks', async (req, res) => {
-  try {
-    const feedbacksSnapshot = await db.collection('Feedbacks').get();
+app.get("/api/getAllFeedbacks", async (req, res) => {
+	try {
+		const feedbacksSnapshot = await db.collection("Feedbacks").get();
 
-    const feedbacks = [];
-    feedbacksSnapshot.forEach((doc) => {
-      feedbacks.push({ id: doc.id, ...doc.data() });
-    });
+		const feedbacks = [];
+		feedbacksSnapshot.forEach((doc) => {
+			feedbacks.push({ id: doc.id, ...doc.data() });
+		});
 
-    res.status(200).json(feedbacks);
-  } catch (error) {
-    console.error('Error fetching feedbacks:', error);
-    res.status(500).json({ error: 'Failed to fetch feedbacks' });
-  }
+		res.status(200).json(feedbacks);
+	} catch (error) {
+		console.error("Error fetching feedbacks:", error);
+		res.status(500).json({ error: "Failed to fetch feedbacks" });
+	}
+});
+
+// Get feedbacks for a particular username
+app.get("/api/getFeedbacks/:username", async (req, res) => {
+	try {
+		const { username } = req.params;
+
+		const feedbacksSnapshot = await db
+			.collection("Feedbacks")
+			.where("username", "==", username)
+			.get();
+
+		const feedbacks = [];
+		feedbacksSnapshot.forEach((doc) => {
+			feedbacks.push({ id: doc.id, ...doc.data() });
+		});
+
+		res.status(200).json(feedbacks);
+	} catch (error) {
+		console.error("Error fetching feedbacks:", error);
+		res.status(500).json({ error: "Failed to fetch feedbacks" });
+	}
+});
+
+// Add new notification
+app.post("/api/notifications", async (req, res) => {
+	try {
+		const newNotification = req.body;
+		const addedNotification = await db
+			.collection("notifications")
+			.add(newNotification);
+		res.status(201).json({ id: addedNotification.id, ...newNotification });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+});
+
+// Route to get notifications for a specific username
+app.get("/api/notifications/:username", async (req, res) => {
+	try {
+		const username = req.params.username;
+		const notificationsSnapshot = await db
+			.collection("notifications")
+			.where("username", "==", username)
+			.get();
+
+		if (notificationsSnapshot.empty) {
+			return res
+				.status(404)
+				.json({ message: "No notifications found for this user." });
+		}
+
+		const notifications = notificationsSnapshot.docs.map((doc) => {
+			return { id: doc.id, ...doc.data() };
+		});
+		res.status(200).json(notifications);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+});
+
+// Route to get notifications for a specific role
+app.get("/api/notifications/:role", async (req, res) => {
+	try {
+		const role = req.params.role;
+		const notificationsSnapshot = await db
+			.collection("notifications")
+			.where("role", "==", role)
+			.get();
+
+		if (notificationsSnapshot.empty) {
+			return res
+				.status(404)
+				.json({ message: "No notifications found for this user." });
+		}
+
+		const notifications = notificationsSnapshot.docs.map((doc) => doc.data());
+		res.json(notifications);
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
+});
+
+// Route to delete a notification
+app.delete("/api/notifications/:id", async (req, res) => {
+	try {
+		const id = req.params.id;
+		await db.collection("notifications").doc(id).delete();
+		res.status(200).json({ message: "Notification deleted successfully" });
+	} catch (error) {
+		res.status(500).json({ error: error.message });
+	}
 });
 
 // Route for the frontend
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './Frontend/build', 'index.html'));
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname, "./Frontend/build", "index.html"));
 });
 
 app.listen(port, () => {

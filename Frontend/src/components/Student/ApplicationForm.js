@@ -15,10 +15,13 @@ import {
 import axios from "axios";
 import { LeftMenu } from "./Utils";
 import { allPreviousCourses } from "./Variables";
+import { AddCircle } from "@mui/icons-material";
 
 const ApplicationForm = ({ setUser, user }) => {
 	const [preCourse, setPreCourse] = useState(false);
 	const [availableCourses, setAvailableCourses] = useState([]);
+	const [previousCourses, setPreviousCourses] = useState([""]);
+	const [eligibleCourses, setEligibleCourses] = useState([""]);
 	const [formData, setFormData] = useState({
 		username: user.username,
 		name: "",
@@ -54,10 +57,32 @@ const ApplicationForm = ({ setUser, user }) => {
 		}));
 	};
 
-	const handleMultiSelectChange = (event) => {
+	// const handleMultiSelectChange = (event) => {
+	// 	setFormData({
+	// 		...formData,
+	// 		[event.target.name]: event.target.value,
+	// 	});
+	// };
+
+	const handlePreviousCourseChange = (event, index) => {
+		const { value } = event.target;
+		const newPreviousCourses = [...previousCourses];
+		newPreviousCourses[index] = value;
+		setPreviousCourses(newPreviousCourses);
 		setFormData({
 			...formData,
-			[event.target.name]: event.target.value,
+			previousCourses: newPreviousCourses,
+		});
+	};
+
+	const handleEligibleCourseChange = (event, index) => {
+		const { value } = event.target;
+		const newEligibleCourses = [...eligibleCourses];
+		newEligibleCourses[index] = value;
+		setEligibleCourses(newEligibleCourses);
+		setFormData({
+			...formData,
+			eligibleCourses: newEligibleCourses,
 		});
 	};
 
@@ -147,18 +172,30 @@ const ApplicationForm = ({ setUser, user }) => {
 	};
 
 	return (
-		<Box>
+		<Box className="mb-4">
 			<Grid container>
 				<LeftMenu setUser={setUser} />
 				<Grid item xs>
 					<Container className="container">
-						<Typography variant="h4" className="fw-bold my-3">
+						<Typography
+							variant="h4"
+							className="fw-bold my-3"
+							style={{ fontFamily: "Poppins" }}
+						>
 							Welcome, Student
 						</Typography>
-						<Typography variant="h6" className="fw-bold my-3">
+						<Typography
+							variant="h6"
+							className="fw-bold my-3"
+							style={{ fontFamily: "Poppins" }}
+						>
 							Application Form
 						</Typography>
-						<form onSubmit={handleSubmit}>
+						<form
+							onSubmit={handleSubmit}
+							style={{ backgroundColor: "white" }}
+							className="shadow rounded p-5"
+						>
 							<Grid container>
 								{/* Username */}
 								<Grid item xs={5}>
@@ -222,66 +259,118 @@ const ApplicationForm = ({ setUser, user }) => {
 										style={{ width: "100%" }}
 									/>
 								</Grid>
-								{/* Previous Courses */}
-								<Grid item xs={8} className="d-flex align-items-center">
+							</Grid>
+							{/* Previous Courses */}
+							<Box className="border py-2 px-2 mb-4">
+								<Box className="d-flex align-items-center">
 									<Checkbox
 										checked={preCourse}
 										onChange={() => setPreCourse(!preCourse)}
 										inputProps={{ "aria-label": "controlled" }}
 									/>
 									<Typography variant="body1">Previous Course</Typography>
-								</Grid>
+								</Box>
 								{preCourse && (
-									<Grid item xs={8}>
-										<FormControl className="mb-3" fullWidth>
-											<InputLabel>Previous Courses</InputLabel>
-											<Select
-												label="Previous Courses"
-												multiple
-												name="previousCourses"
-												value={formData.previousCourses}
-												onChange={handleMultiSelectChange}
-												renderValue={(selected) => selected.join(", ")}
-											>
-												{allPreviousCourses?.map((course) => (
-													<MenuItem key={course} value={course}>
-														{course}
-													</MenuItem>
-												))}
-											</Select>
-										</FormControl>
-									</Grid>
-								)}
-								{/* Eligible Courses */}
-								<Grid item xs={8}>
-									<FormControl className="mb-3" fullWidth>
-										<InputLabel>Eligible Courses</InputLabel>
-										<Select
-											label="Eligible Courses"
-											multiple
-											name="eligibleCourses"
-											value={formData.eligibleCourses}
-											onChange={handleMultiSelectChange}
-											renderValue={(selected) => selected.join(", ")}
-										>
-											{availableCourses.map((course) => (
-												<MenuItem key={course} value={course}>
-													{course}
-												</MenuItem>
+									<Box className="d-flex justify-content-center flex-column">
+										<Grid container className="d-flex align-items-center">
+											{previousCourses.map((course, index) => (
+												<>
+													<Grid
+														item
+														xs={8}
+														className="d-flex align-items-center"
+													>
+														<FormControl className="mb-3" fullWidth>
+															<InputLabel>Previous Courses</InputLabel>
+															<Select
+																label="Previous Courses"
+																name="previousCourses"
+																value={course}
+																onChange={(event) =>
+																	handlePreviousCourseChange(event, index)
+																}
+															>
+																{allPreviousCourses?.map((course) => (
+																	<MenuItem key={course} value={course}>
+																		{course}
+																	</MenuItem>
+																))}
+															</Select>
+														</FormControl>
+													</Grid>
+													{index === previousCourses.length - 1 && (
+														<Grid item xs={3}>
+															<Button
+																variant="contained"
+																endIcon={<AddCircle />}
+																color="warning"
+																className="ms-4"
+																onClick={() =>
+																	setPreviousCourses([...previousCourses, ""])
+																}
+															>
+																ADD
+															</Button>
+														</Grid>
+													)}
+												</>
 											))}
-										</Select>
-									</FormControl>
+										</Grid>
+									</Box>
+								)}
+							</Box>
+							{/* Eligible Courses */}
+							<Box className="border py-2 pt-4 px-2 mb-4">
+								<Grid container className="d-flex align-items-center">
+									{eligibleCourses.map((course, index) => (
+										<>
+											<Grid item xs={8} className="d-flex align-items-center">
+												<FormControl className="mb-3" fullWidth>
+													<InputLabel>Eligible Courses</InputLabel>
+													<Select
+														label="Eligible Courses"
+														name="eligibleCourses"
+														value={course}
+														onChange={(event) =>
+															handleEligibleCourseChange(event, index)
+														}
+													>
+														{availableCourses?.map((course) => (
+															<MenuItem key={course} value={course}>
+																{course}
+															</MenuItem>
+														))}
+													</Select>
+												</FormControl>
+											</Grid>
+											{index === eligibleCourses.length - 1 && (
+												<Grid item xs={3}>
+													<Button
+														variant="contained"
+														endIcon={<AddCircle />}
+														color="warning"
+														className="ms-4"
+														onClick={() =>
+															setEligibleCourses([...eligibleCourses, ""])
+														}
+													>
+														ADD
+													</Button>
+												</Grid>
+											)}
+										</>
+									))}
 								</Grid>
-								{/* Resume */}
-								<Grid item xs={8}>
-									<input
-										type="file"
-										name="resume"
-										onChange={handleFileChange}
-										className="mb-3"
-										accept=".pdf"
-									/>
-								</Grid>
+							</Box>
+							{/* Resume */}
+							<Grid item xs={8}>
+								<input
+									type="file"
+									name="resume"
+									onChange={handleFileChange}
+									className="mb-3"
+									accept=".pdf"
+								/>
 							</Grid>
 							<Button type="submit" variant="contained" color="primary">
 								Submit

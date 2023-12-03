@@ -6,9 +6,6 @@ import {
 	Container,
 	Grid,
 	Box,
-	List,
-	ListItem,
-	ListItemText,
 } from "@mui/material";
 import { LeftMenu } from "./Utils";
 import axios from "axios";
@@ -43,9 +40,9 @@ const InputCourse = ({ setUser }) => {
 
 			if (response.status === 201) {
 				alert("Course added successfully");
-        const newAvailableCourses = [...availableCourses, courseName];
-        setAvailableCourses(newAvailableCourses);
-        setCourseName("");
+				const newAvailableCourses = [...availableCourses, courseName];
+				setAvailableCourses(newAvailableCourses);
+				setCourseName("");
 			}
 		} catch (err) {
 			alert("Failed to add the course");
@@ -59,37 +56,55 @@ const InputCourse = ({ setUser }) => {
 			<Grid container>
 				<LeftMenu setUser={setUser} />
 				<Grid item xs className="mx-5 pt-5">
-					<Typography variant="h4" gutterBottom>
-						Course Requirements
-					</Typography>
-					<form onSubmit={handleSubmit}>
-						<Container className="mb-3">
-							<TextField
-								label="Course Name"
-								variant="outlined"
-								fullWidth
-								value={courseName}
-								onChange={(e) => setCourseName(e.target.value)}
-							/>
-						</Container>
-						<Box className="d-flex justify-content-center">
-							<Button variant="contained" color="primary" type="submit">
-								Submit
-							</Button>
-						</Box>
-					</form>
+					<Box
+						style={{ backgroundColor: "rgba(255,255,255,0.7)" }}
+						className="shadow px-3 py-3"
+					>
+						<Typography
+							variant="h5"
+							gutterBottom
+							style={{ fontFamily: "Poppins" }}
+							className="fw-bold"
+						>
+							Course Requirements
+						</Typography>
+						<form onSubmit={handleSubmit}>
+							<Container className="mb-3">
+								<TextField
+									label="Course Name"
+									variant="outlined"
+									fullWidth
+									value={courseName}
+									onChange={(e) => setCourseName(e.target.value)}
+								/>
+							</Container>
+							<Box className="d-flex justify-content-center">
+								<Button variant="contained" color="primary" type="submit">
+									Submit
+								</Button>
+							</Box>
+						</form>
+					</Box>
 					{availableCourses.length !== 0 && (
-						<Box className="container mt-4">
-							<Typography variant="h4" gutterBottom>
+						<Box
+							className="shadow container mt-4 py-3 px-4"
+							style={{ backgroundColor: "rgba(255,255,255,0.7)" }}
+						>
+							<Typography
+								variant="h5"
+								gutterBottom
+								style={{ fontFamily: "Poppins" }}
+								className="fw-bold"
+							>
 								Course Names
 							</Typography>
-							<List>
+							<Grid container>
 								{availableCourses?.map((courseName, index) => (
-									<ListItem key={index}>
-										<ListItemText primary={courseName} />
-									</ListItem>
+									<Grid item xs={5}>
+										<Typography>{courseName}</Typography>
+									</Grid>
 								))}
-							</List>
+							</Grid>
 						</Box>
 					)}
 				</Grid>

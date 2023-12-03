@@ -74,12 +74,25 @@ const ApplicationsTC = ({ setUser }) => {
 		fetchApplicants();
 	}, []);
 
+	const downloadPdf = (name, url) => {
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = `${name}-resume.pdf`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
 	return (
 		<Box>
 			<Grid container>
 				<LeftMenu setUser={setUser} />
 				<Grid item xs className="px-4" style={{ overflow: "auto" }}>
-					<Typography variant="h4" className="fw-bold my-4">
+					<Typography
+						variant="h4"
+						className="fw-bold my-4"
+						style={{ fontFamily: "Poppins" }}
+					>
 						Welcome, TA Committee Member
 					</Typography>
 					{loading ? (
@@ -88,7 +101,11 @@ const ApplicationsTC = ({ setUser }) => {
 						</Container>
 					) : (
 						<Box>
-							<Typography variant="h6" className="my-4 ms-3">
+							<Typography
+								variant="h6"
+								className=" fw-bold my-4 ms-3"
+								style={{ fontFamily: "Poppins" }}
+							>
 								{
 									applications.filter((application) =>
 										application.status.includes("In Review")
@@ -104,10 +121,46 @@ const ApplicationsTC = ({ setUser }) => {
 									<Table aria-label="simple table">
 										<TableHead>
 											<TableRow>
-												<TableCell>Name</TableCell>
-												<TableCell align="right">Email</TableCell>
-												<TableCell align="right">Selected Courses</TableCell>
-												<TableCell align="right">Previous Courses</TableCell>
+												<TableCell>
+													<Typography
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
+													>
+														Name
+													</Typography>
+												</TableCell>
+												<TableCell align="right">
+													<Typography
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
+													>
+														Email
+													</Typography>
+												</TableCell>
+												<TableCell align="right">
+													<Typography
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
+													>
+														Selected Courses
+													</Typography>
+												</TableCell>
+												<TableCell align="left">
+													<Typography
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
+													>
+														Previous Courses
+													</Typography>
+												</TableCell>
+												<TableCell align="left">
+													<Typography
+														style={{ fontFamily: "Poppins" }}
+														className="fw-bold"
+													>
+														Resume
+													</Typography>
+												</TableCell>
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -134,7 +187,7 @@ const ApplicationsTC = ({ setUser }) => {
 																);
 															})}
 														</TableCell>
-														<TableCell align="right">
+														<TableCell align="left">
 															{application.previousTACourses.map(
 																(course, index) => {
 																	return (
@@ -146,6 +199,20 @@ const ApplicationsTC = ({ setUser }) => {
 																	);
 																}
 															)}
+														</TableCell>
+														<TableCell align="left">
+															<Button
+																variant="outlined"
+																color="primary"
+																onClick={() =>
+																	downloadPdf(
+																		application.name,
+																		application.resume
+																	)
+																}
+															>
+																Download
+															</Button>
 														</TableCell>
 														<TableCell>
 															<Button

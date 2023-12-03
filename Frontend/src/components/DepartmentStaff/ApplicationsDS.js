@@ -4,7 +4,6 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "../../styles/ApplicationsDS.css";
 import {
-	Avatar,
 	Box,
 	Button,
 	Card,
@@ -166,16 +165,31 @@ const ApplicationCard = ({
 		}
 	};
 
+	const downloadPdf = (name, url) => {
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = `${name}-resume.pdf`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
+
 	return (
 		<Card className="px-3 py-2 mb-3 shadow" key={index} variant="outlined">
 			<Box className="d-flex align-items-center justify-content-between">
-				<Avatar variant="rounded" sx={{ width: 50, height: 50 }} />
-				<Typography variant="h6" className="ms-5">
+				<Typography variant="h6" className="">
 					{application.name}
 				</Typography>
-				<Typography variant="body1" className="ms-5">
+				<Typography variant="body1" className="ms-2">
 					{application.email}
 				</Typography>
+				<Button
+					variant="text"
+					color="primary"
+					onClick={() => downloadPdf(application.name, application.resume)}
+				>
+					Resume
+				</Button>
 				<Box className="d-flex align-items-center">
 					<Button
 						variant="contained"
@@ -287,10 +301,18 @@ const ApplicationsDS = ({ setUser, user }) => {
 			<Grid container spacing={2}>
 				<LeftMenu setUser={setUser} user={user} />
 				<Grid item className="mx-5 pt-5" xs style={{ height: "100vh" }}>
-					<Typography variant="h4" className="fw-bold">
+					<Typography
+						variant="h4"
+						className="fw-bold"
+						style={{ fontFamily: "Poppins" }}
+					>
 						Welcome, Department Staff
 					</Typography>
-					<Typography variant="h6" className="mt-2">
+					<Typography
+						variant="h6"
+						className="mt-2"
+						style={{ fontFamily: "Poppins" }}
+					>
 						{applications.length} Applicants
 					</Typography>
 					<Container className="mt-4 applicationRightBox">
