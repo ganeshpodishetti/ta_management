@@ -166,6 +166,8 @@ const ApplicationForm = ({ setUser, user }) => {
 				eligibleCourses: [],
 				resume: null,
 			});
+			setEligibleCourses([""]);
+			setPreviousCourses([""]);
 		} catch (error) {
 			console.error("Error submitting form:", error);
 		}
