@@ -165,13 +165,29 @@ const ApplicationCard = ({
 		}
 	};
 
-	const downloadPdf = (name, url) => {
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = `${name}-resume.pdf`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
+	const downloadFile = async (filename) => {
+		try {
+			filename = filename.split("/")[1];
+			const response = await axios.get(`/api/download-resume/${filename}`, {
+				responseType: "blob",
+			});
+	
+			const file = new Blob([response.data], {
+				type: "application/octet-stream",
+			});
+	
+			const downloadUrl = window.URL.createObjectURL(file);
+			const link = document.createElement("a");
+			link.href = downloadUrl;
+			link.setAttribute("download", `${application.name}-resume.pdf`);
+			document.body.appendChild(link);
+			link.click();
+	
+			link.parentNode.removeChild(link);
+			window.URL.revokeObjectURL(downloadUrl);
+		} catch (error) {
+			console.error("Error downloading file:", error);
+		}
 	};
 
 	return (
@@ -186,7 +202,7 @@ const ApplicationCard = ({
 				<Button
 					variant="text"
 					color="primary"
-					onClick={() => downloadPdf(application.name, application.resume)}
+					onClick={() => downloadFile(application.resume)}
 				>
 					Resume
 				</Button>

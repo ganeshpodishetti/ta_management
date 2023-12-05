@@ -438,6 +438,22 @@ app.delete("/api/notifications/:id", async (req, res) => {
 	}
 });
 
+// Route to download resume file
+app.get("/api/download-resume/:filename", (req, res) => {
+	const filename = req.params.filename;
+	const fileDirectory = path.join(__dirname, "uploads");
+	const filePath = path.join(fileDirectory, filename);
+
+	if (fs.existsSync(filePath)) {
+		res.setHeader("Content-Disposition", "attachment; filename=" + filename);
+
+		const readStream = fs.createReadStream(filePath);
+		readStream.pipe(res);
+	} else {
+		res.status(404).send("File not found");
+	}
+});
+
 // Route for the frontend
 app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname, "./Frontend/build", "index.html"));
