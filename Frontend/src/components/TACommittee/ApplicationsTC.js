@@ -74,13 +74,29 @@ const ApplicationsTC = ({ setUser }) => {
 		fetchApplicants();
 	}, []);
 
-	const downloadPdf = (name, url) => {
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = `${name}-resume.pdf`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
+	const downloadFile = async (name,filename) => {
+		try {
+			filename = filename.split("/")[1];
+			const response = await axios.get(`/api/download-resume/${filename}`, {
+				responseType: "blob",
+			});
+	
+			const file = new Blob([response.data], {
+				type: "application/octet-stream",
+			});
+	
+			const downloadUrl = window.URL.createObjectURL(file);
+			const link = document.createElement("a");
+			link.href = downloadUrl;
+			link.setAttribute("download", `${name}-resume.pdf`);
+			document.body.appendChild(link);
+			link.click();
+	
+			link.parentNode.removeChild(link);
+			window.URL.revokeObjectURL(downloadUrl);
+		} catch (error) {
+			console.error("Error downloading file:", error);
+		}
 	};
 
 	return (
@@ -205,7 +221,7 @@ const ApplicationsTC = ({ setUser }) => {
 																variant="outlined"
 																color="primary"
 																onClick={() =>
-																	downloadPdf(
+																	downloadFile(
 																		application.name,
 																		application.resume
 																	)
